@@ -64,7 +64,7 @@ At root node, information gains for
 
 \subsection{Further splitting:}
 For root node's children, \# meetings $> 1$ is not split into $2-3$ and $>3$ because all the entries which fall into these categories are classified in the `No' class.
-\\For  Workload's children, the `Average' child has all values as YES(for average workload 3/3) and the `Not average' child has majority NO values(6 out of 8).
+\\For  Workload's children, the `Average' child has all values as YES(for average workload 3/3) and the `Not average' child has majority NO values(6 out of 8). I chose to merge the light and heavy workload resulting in 6/8 cases being NO. I could have chosen to merge the light workload(1 YES, 1 NO) with either the average or the heavy workload part but both the splits give the same accuracy for the test data.
 
 \iffalse
 \begin{table}[h!]
@@ -93,26 +93,72 @@ This is for Question 2
 \end{mlsolution}
 
 \begin{mlsolution}
+\section*{1. Vacuous constraints:}
+\textbf{To prove:} The given optimization problem has the same solutions with and without the constraint:
+$\xi_i \geq 0, \text{ for all } i \in [n]$.\newline
+\\\textbf{Proof:}
+\\We will prove this by contradiction.
+\\ Suppose $\hat{\vw},\bc{\hat{\xi_i}}$ are solutions to the optimization problem without the last constraint for some given inputs such that $\hat{\xi_k} < 0$ for at least one $k \in [n]$.
+\\ Consider a new proposed solution to the optimization problem $\hat{\vw'},\bc{\hat{\xi'_i}}$ such that 
+\\$\hat{\vw'} = \hat{\vw},\  \hat{\xi'_k} = 0 \text{ and } \hat{\xi'_i} = \hat{\xi_i}\  \forall\  i \in [n] \setminus \{k\}.$\newline
+\\It is easy to see that the new proposed solution satisfies the constraints that
+\\ $\ y^i\ip{\hat{\vw'}}{\vx^i} \geq 1 - \hat{\xi'_i}, \text{ for all } i$. 
+\\For $i \neq k$, the constraint is satisfied since we took it $\hat{\xi'_i} = \hat{\xi_i}$ and $\hat{\xi_i}$ is a part of the solution of the initial optimisation problem.
+\\For $i = k$, we have 
+\\ $\ y^i\ip{\hat{\vw}}{\vx^i} \geq 1 - \hat{\xi_i}\  \because\ \text{it was part of the initial solution} $
+\\$\implies y^i\ip{\hat{\vw}}{\vx^i} \geq 1 - \hat{\xi_i}\ $
+\\$\implies y^i\ip{\hat{\vw}}{\vx^i} \geq 1\ \because\ \hat{\xi_k} < 0\ $
+\\$\implies y^i\ip{\hat{\vw'}}{\vx^i} \geq 1\ \because\  \hat{\vw'} = \hat{\vw} $
+\\$\implies y^i\ip{\hat{\vw'}}{\vx^i} \geq 1 - \hat{\xi'_i}\ \because\  \hat{\xi'_k} = 0 $\newline
+\\Thus, we have a solution which satisfies all the given constraints AND
+\\$\norm{\hat{\vw'}}_2^2 + \sum_{i=1}^n\hat{\xi'_i}^2 < \norm{\hat{\vw}}_2^2 + \sum_{i=1}^n\hat{\xi_i}^2 $.
+\\Thus, $\hat{\vw},\bc{\hat{\xi_i}}$ could not have been an optima if $\hat{\xi_k} < 0$ for at least one $k \in [n]$
+\\$\implies \text{ for an optimal solution, } \xi_k \geq 0\  \forall\  k \in [n]$
+
+\section*{2. Lagrangian:}
+$$\mathcal{L}(\vw,\bc{\xi_i},\valpha) =  \norm{\vw}_2^2 + \sum_{i=1}^n\xi_i^2 + \sum_{i=1}^n\valpha_i (1- \xi_i - y^i\ip{\vw}{\vx^i})  $$
+The primal problem is:
+$$\hat{\vw}_p, \bc{\hat{\xi}_i}_p = \underset{\vw,\bc{\xi_i}}{\arg\min} \ \Bigg(\underset{\valpha \geq 0}{\arg\max}\  \Big(\mathcal{L}(\vw,\bc{\xi_i},\valpha)\Big) \Bigg)   $$
+
+\section*{3. Dual Problem:}
+The primal problem is:
+$$\hat{\vw}_p, \bc{\hat{\xi}_i}_p = \underset{\vw,\bc{\xi_i}}{\arg\min} \ \Bigg(\underset{\valpha \geq 0}{\arg\max}\  \Big(\norm{\vw}_2^2 + \sum_{i=1}^n\xi_i^2 + \sum_{i=1}^n\valpha_i (1- \xi_i - y^i\ip{\vw}{\vx^i})\Big) \Bigg)   $$
+The corresponding dual problem is:
+$$\hat{\vw}_d, \bc{\hat{\xi}_i}_d = \underset{\valpha \geq 0}{\arg\max} \ \Bigg(\underset{\vw,\bc{\xi_i}}{\arg\min}\  \Big(\norm{\vw}_2^2 + \sum_{i=1}^n\xi_i^2 + \sum_{i=1}^n\valpha_i (1- \xi_i - y^i\ip{\vw}{\vx^i})\Big) \Bigg)   $$
+We first take the gradient wrt $\vw$ and equate it to zero.
+$$\nabla_\vw\mathcal{L}(\vw,\bc{\xi_i},\valpha) = 0$$
+$$\implies 2\vw - \sum_{i=1}^n\valpha_i y^i{\vx^i} = 0  $$
+$$\implies \vw = \sum_{i=1}^n\frac{\valpha_i}{2}y^i{\vx^i}$$
+After substituting this in the equation for the Lagrangian, we get:
+$$\mathcal{L}(\bc{\xi_i},\valpha) = \frac{1}{4}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} + \sum_{i=1}^n\xi_i^2 - \frac{1}{2}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} + \sum_{i=1}^n\valpha_i (1- \xi_i) $$
+$$\implies \mathcal{L}(\bc{\xi_i},\valpha) = -\frac{1}{4}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} + \sum_{i=1}^n\xi_i^2 + \sum_{i=1}^n\valpha_i (1- \xi_i)$$
+We now take the gradient wrt $\vxi$ and equate it to zero.
+$$\nabla_\vxi\mathcal{L}(\vxi,\valpha) = 0$$
+$$\implies 2\vxi - \valpha = 0$$
+$$\implies \vxi = \frac{1}{2} \valpha$$
+Substituting this into the equation for Lagrangian, we get
+$$\implies \mathcal{L}(\valpha) = -\frac{1}{4}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} + \sum_{i=1}^n\frac{1}{4}\valpha_i^2 + \sum_{i=1}^n\valpha_i  - \sum_{i=1}^n\frac{1}{2}\valpha_i^2$$
+$$\mathcal{L}(\valpha) = -\frac{1}{4}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} - \frac{1}{4}\sum_{i=1}^n\valpha_i^2 + \sum_{i=1}^n\valpha_i$$
+Therefore, the dual problem gets converted to:
+$$ \underset{\valpha \geq 0}{\arg \max} \ \Bigg( -\frac{1}{4}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} - \frac{1}{4}\sum_{i=1}^n\valpha_i^2 + \sum_{i=1}^n\valpha_i \Bigg) $$
+
+\section*{4. Comparision with SVM dual:}
+The dual problem for original SVM is:
+$$\underset{0 \leq \valpha \leq 1}{\arg \max} \ \Bigg( -\frac{1}{2}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} + \sum_{i=1}^n\valpha_i \Bigg)   $$ and the dual for (P1) is:
+$$ \underset{\valpha \geq 0}{\arg \max} \ \Bigg( -\frac{1}{4}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} - \frac{1}{4}\sum_{i=1}^n\valpha_i^2 + \sum_{i=1}^n\valpha_i \Bigg) $$
+Some important differences between the two duals are:
+\begin{itemize}
+\item $\valpha$ is bounded on both the sides for the dual of the original SVM problem but it is bounded only on one side for (P1).
+\item There is a dependence on the $\valpha^2_i$ in the case of the dual problem for (P1) but not in the case of the dual problem for the original SVM problem.
+\item There is a lesser dependence on the cross terms $\valpha_i\valpha_j$ in the case of the dual for (P1) when compared to the dual of the original SVM problem.
+\end{itemize}
+
+\section*{5. Bonus:}
+No, the positivity constraints are not vacuous for the original SVM problem.
+\\If we remove the positivity constraint from the original SVM problem, then we might end up with different solutions.
+\\For example, consider a solution set in which for some value of $i$, we have $y^i\ip{\vw}{\vx^i} > 1$, with the positivity constraint, we would need $\xi_i = 0$ but if we remove the positivity constraint, then we will have at least one better solution i.e keep everything else the same and make $\xi'_i = 1 - y^i\ip{\vw}{\vx^i}$.
 
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis feugiat vehicula dolor, sed ultricies leo. Phasellus euismod dictum felis in euismod. Proin pretium vel neque in placerat. Proin imperdiet egestas vulputate. Etiam faucibus accumsan ante non viverra. Duis ultrices ac odio vel sodales. In maximus gravida dolor, ut commodo lacus. Pellentesque ante massa, venenatis id aliquam et, posuere sed dui. Duis dignissim justo sit amet augue posuere fringilla. Suspendisse at nisi gravida, mattis justo sit amet, elementum elit. Praesent et massa ornare, consequat dui eget, ornare risus. Duis est nibh, sollicitudin nec mattis non, mattis in leo. Donec finibus justo sed massa sagittis, non fermentum nibh dictum. Pellentesque et congue purus. Donec porta pretium porttitor.
-
-Morbi euismod risus eu tortor ornare malesuada. Nunc sed sollicitudin neque, efficitur rhoncus tellus. Cras malesuada augue arcu. Sed sem odio, tincidunt quis laoreet ac, facilisis ut nibh. Quisque gravida dolor at egestas aliquam. Aenean mollis massa sit amet enim mattis, vel fermentum tortor facilisis. Donec pellentesque est velit, vitae posuere lorem tristique ut.
-
-\begin{figure}[th]%
-\centering
-\includegraphics[width=0.4\columnwidth]{proto_blank.png}%
-\hfill
-\includegraphics[width=0.4\columnwidth]{proto_euclid_sample.png}%
-\caption{Learning with Prototypes: the figure on the left shows the two prototypes. The figure on the right shows what the decision boundary if the distance measure used is $d(\vz^1,\vz^2) = \norm{\vz^1-\vz^2}_2$, for any two points $\vz^1,\vz^2 \in \bR^2$. The decision boundary in this case is the line $y = x$.}%
-\label{fig:proto}%
-\end{figure}
-
-Fusce pulvinar convallis lobortis. Mauris iaculis lacus vitae dui suscipit, ut ornare neque placerat. In mattis malesuada rutrum. Vivamus consectetur tempus ex sit amet aliquam. In blandit libero at mi rutrum, nec iaculis orci cursus. Maecenas a dolor lorem. Donec pretium turpis sapien, dapibus sollicitudin odio scelerisque eget. Maecenas egestas tellus a quam scelerisque, et pretium magna condimentum. In dapibus feugiat ornare. Nunc eget nulla convallis, laoreet tortor nec, convallis dui. Etiam in leo vitae nulla facilisis congue. Curabitur blandit sodales augue. Vivamus et aliquam orci, non suscipit elit. Quisque vestibulum lacus at velit congue semper.
-
-Nulla efficitur risus nunc, in posuere turpis tempor eget. Sed efficitur id tellus non vestibulum. Praesent elementum condimentum sollicitudin. Integer eget quam dictum, varius est sit amet, aliquam mauris. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Morbi in pretium dui. Sed luctus magna rutrum ex mollis, ut blandit lacus tincidunt. In tincidunt urna neque, placerat consequat velit sagittis id. Morbi pretium maximus fermentum. Interdum et malesuada fames ac ante ipsum primis in faucibus. Duis vehicula efficitur rhoncus. Nullam lacinia semper scelerisque. Maecenas eleifend nisi et ante auctor, a tincidunt arcu molestie. Aenean faucibus feugiat arcu ac mattis.
-
-Morbi quis suscipit sapien. Pellentesque pulvinar fermentum tellus at malesuada. Nam id metus vitae risus dignissim laoreet. Pellentesque massa velit, vehicula in convallis et, vestibulum sed turpis. In venenatis massa vel mattis tincidunt. Donec varius faucibus elit, in blandit metus interdum sit amet. Nullam vel nibh non nisl mollis volutpat. Donec cursus iaculis lorem, id elementum metus iaculis nec. Cras a diam porttitor, suscipit dolor id, vestibulum nisi. Morbi maximus mauris a iaculis hendrerit. Duis rutrum quam in ex lobortis gravida. Aenean iaculis lacinia metus. Fusce sit amet dignissim elit, sed sodales lacus. Mauris ac neque finibus, bibendum tortor id, scelerisque neque. In nec quam ullamcorper, egestas sem ut, iaculis ante. Nam porta diam ut lacus sagittis euismod. 
 \end{mlsolution}
 
 \begin{mlsolution}
