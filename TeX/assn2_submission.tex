@@ -116,40 +116,37 @@ $\xi_i \geq 0, \text{ for all } i \in [n]$.\newline
 \\$\implies \text{ for an optimal solution, } \xi_k \geq 0\  \forall\  k \in [n]$
 
 \section*{2. Lagrangian:}
-$$\mathcal{L}(\vw,\bc{\xi_i},\valpha) =  \norm{\vw}_2^2 + \sum_{i=1}^n\xi_i^2 + \sum_{i=1}^n\valpha_i (1- \xi_i - y^i\ip{\vw}{\vx^i})  $$
-The primal problem is:
-$$\hat{\vw}_p, \bc{\hat{\xi}_i}_p = \underset{\vw,\bc{\xi_i}}{\arg\min} \ \Bigg(\underset{\valpha \geq 0}{\arg\max}\  \Big(\mathcal{L}(\vw,\bc{\xi_i},\valpha)\Big) \Bigg)   $$
+$$\mathcal{L}(\vw,\bc{\xi_i},\valpha,\vbeta) =  \norm{\vw}_2^2 + \sum_{i=1}^n\xi_i^2 + \sum_{i=1}^n\valpha_i (1- \xi_i - y^i\ip{\vw}{\vx^i}) + \sum_{i=1}^n\vbeta_i(-\xi_i)  $$
 
 \section*{3. Dual Problem:}
-The primal problem is:
-$$\hat{\vw}_p, \bc{\hat{\xi}_i}_p = \underset{\vw,\bc{\xi_i}}{\arg\min} \ \Bigg(\underset{\valpha \geq 0}{\arg\max}\  \Big(\norm{\vw}_2^2 + \sum_{i=1}^n\xi_i^2 + \sum_{i=1}^n\valpha_i (1- \xi_i - y^i\ip{\vw}{\vx^i})\Big) \Bigg)   $$
-The corresponding dual problem is:
-$$\hat{\vw}_d, \bc{\hat{\xi}_i}_d = \underset{\valpha \geq 0}{\arg\max} \ \Bigg(\underset{\vw,\bc{\xi_i}}{\arg\min}\  \Big(\norm{\vw}_2^2 + \sum_{i=1}^n\xi_i^2 + \sum_{i=1}^n\valpha_i (1- \xi_i - y^i\ip{\vw}{\vx^i})\Big) \Bigg)   $$
-We first take the gradient wrt $\vw$ and equate it to zero.
-$$\nabla_\vw\mathcal{L}(\vw,\bc{\xi_i},\valpha) = 0$$
+To get the dual problem, we need to eliminate the primal variables $\vw$ and $\bc{\xi_i}$ from the Lagrangian.
+
+We first take the gradient of $\mathcal{L}$ wrt $\vw$ and equate it to zero.
+$$\nabla_\vw\mathcal{L}(\vw,\bc{\xi_i},\valpha,\vbeta) = 0$$
 $$\implies 2\vw - \sum_{i=1}^n\valpha_i y^i{\vx^i} = 0  $$
 $$\implies \vw = \sum_{i=1}^n\frac{\valpha_i}{2}y^i{\vx^i}$$
 After substituting this in the equation for the Lagrangian, we get:
-$$\mathcal{L}(\bc{\xi_i},\valpha) = \frac{1}{4}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} + \sum_{i=1}^n\xi_i^2 - \frac{1}{2}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} + \sum_{i=1}^n\valpha_i (1- \xi_i) $$
-$$\implies \mathcal{L}(\bc{\xi_i},\valpha) = -\frac{1}{4}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} + \sum_{i=1}^n\xi_i^2 + \sum_{i=1}^n\valpha_i (1- \xi_i)$$
+$$\mathcal{L}(\bc{\xi_i},\valpha,\vbeta) = \frac{1}{4}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} + \sum_{i=1}^n\xi_i^2 - \frac{1}{2}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} + \sum_{i=1}^n\valpha_i (1- \xi_i)  + \sum_{i=1}^n\vbeta_i(-\xi_i)  $$
+$$\implies \mathcal{L}(\bc{\xi_i},\valpha,\vbeta) = -\frac{1}{4}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} + \sum_{i=1}^n\xi_i^2 + \sum_{i=1}^n\valpha_i (1- \xi_i) + \sum_{i=1}^n\vbeta_i(-\xi_i)  $$
 We now take the gradient wrt $\vxi$ and equate it to zero.
-$$\nabla_\vxi\mathcal{L}(\vxi,\valpha) = 0$$
-$$\implies 2\vxi - \valpha = 0$$
-$$\implies \vxi = \frac{1}{2} \valpha$$
+$$\nabla_\vxi\mathcal{L}(\vxi,\valpha,\vbeta) = 0$$
+$$\implies 2\vxi - \valpha - \vbeta = 0$$
+$$\implies \vxi = \frac{1}{2} (\valpha + \vbeta)$$
 Substituting this into the equation for Lagrangian, we get
-$$\implies \mathcal{L}(\valpha) = -\frac{1}{4}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} + \sum_{i=1}^n\frac{1}{4}\valpha_i^2 + \sum_{i=1}^n\valpha_i  - \sum_{i=1}^n\frac{1}{2}\valpha_i^2$$
-$$\mathcal{L}(\valpha) = -\frac{1}{4}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} - \frac{1}{4}\sum_{i=1}^n\valpha_i^2 + \sum_{i=1}^n\valpha_i$$
-Therefore, the dual problem gets converted to:
-$$ \underset{\valpha \geq 0}{\arg \max} \ \Bigg( -\frac{1}{4}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} - \frac{1}{4}\sum_{i=1}^n\valpha_i^2 + \sum_{i=1}^n\valpha_i \Bigg) $$
+$$\implies \mathcal{L}(\valpha,\vbeta) = -\frac{1}{4}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} + \sum_{i=1}^n\frac{1}{4}(\valpha_i+\vbeta_i)^2 + \sum_{i=1}^n\valpha_i  - \sum_{i=1}^n\frac{1}{2}(\valpha_i+\vbeta_i)^2$$
+$$\implies \mathcal{L}(\valpha,\vbeta) = -\frac{1}{4}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} - \frac{1}{4}\sum_{i=1}^n(\valpha_i+\vbeta_i)^2 + \sum_{i=1}^n\valpha_i$$
+Therefore, the dual problem is:
+$$ \underset{\valpha,\vbeta \geq 0}{\max} \ \Bigg( -\frac{1}{4}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} - \frac{1}{4}\sum_{i=1}^n(\valpha_i+\vbeta_i)^2 + \sum_{i=1}^n\valpha_i \Bigg) $$
 
 \section*{4. Comparision with SVM dual:}
 The dual problem for original SVM is:
-$$\underset{0 \leq \valpha \leq 1}{\arg \max} \ \Bigg( -\frac{1}{2}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} + \sum_{i=1}^n\valpha_i \Bigg)   $$ and the dual for (P1) is:
-$$ \underset{\valpha \geq 0}{\arg \max} \ \Bigg( -\frac{1}{4}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} - \frac{1}{4}\sum_{i=1}^n\valpha_i^2 + \sum_{i=1}^n\valpha_i \Bigg) $$
+$$\underset{0 \leq \valpha \leq 1}{\max} \ \Bigg( -\frac{1}{2}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} + \sum_{i=1}^n\valpha_i \Bigg)   $$ and the dual for (P1) is:
+$$ \underset{\valpha,\vbeta \geq 0}{\max} \ \Bigg( -\frac{1}{4}\sum_{i=1}^n \sum_{j=1}^n\valpha_i\valpha_j y^i y^j {\vx^i.}{\vx^j} - \frac{1}{4}\sum_{i=1}^n(\valpha_i+\vbeta_i)^2 + \sum_{i=1}^n\valpha_i \Bigg) $$
 Some important differences between the two duals are:
 \begin{itemize}
-\item $\valpha$ is bounded on both the sides for the dual of the original SVM problem but it is bounded only on one side for (P1).
-\item There is a dependence on the $\valpha^2_i$ in the case of the dual problem for (P1) but not in the case of the dual problem for the original SVM problem.
+\item The dual for (P1) involves two sets of Lagrange multipliers $\valpha_i$ and $\vbeta_i$ for $i \in [n]$ whereas the dual for the original SVM problem involves only $\valpha_i$
+\item $\valpha$ is bounded on both the sides for the dual of the original SVM problem but it is bounded only on one side for the dual problem of (P1).
+\item There is a dependence on $(\valpha_i+\vbeta_i)^2$ in the case of the dual problem for (P1) but in the case of the dual problem for the original SVM problem, there is no dependence of such square terms.
 \item There is a lesser dependence on the cross terms $\valpha_i\valpha_j$ in the case of the dual for (P1) when compared to the dual of the original SVM problem.
 \end{itemize}
 
@@ -162,9 +159,9 @@ No, the positivity constraints are not vacuous for the original SVM problem.
 \end{mlsolution}
 
 \begin{mlsolution}
- Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis feugiat vehicula dolor, sed ultricies leo. Phasellus euismod dictum felis in euismod. Proin pretium vel neque in placerat. Proin imperdiet egestas vulputate. Etiam faucibus accumsan ante non viverra. Duis ultrices ac odio vel sodales. In maximus gravida dolor, ut commodo lacus. Pellentesque ante massa, venenatis id aliquam et, posuere sed dui. Duis dignissim justo sit amet augue posuere fringilla. Suspendisse at nisi gravida, mattis justo sit amet, elementum elit. Praesent et massa ornare, consequat dui eget, ornare risus. Duis est nibh, sollicitudin nec mattis non, mattis in leo. Donec finibus justo sed massa sagittis, non fermentum nibh dictum. Pellentesque et congue purus. Donec porta pretium porttitor.
+\section*{3.}
+For the GD solver, the current iterate $\vw^t$ gives better performance
 
-Morbi euismod risus eu tortor ornare malesuada. Nunc sed sollicitudin neque, efficitur rhoncus tellus. Cras malesuada augue arcu. Sed sem odio, tincidunt quis laoreet ac, facilisis ut nibh. Quisque gravida dolor at egestas aliquam. Aenean mollis massa sit amet enim mattis, vel fermentum tortor facilisis. Donec pellentesque est velit, vitae posuere lorem tristique ut. 
 \end{mlsolution}
 					
 \end{document}
